@@ -98,9 +98,10 @@ function App() {
       }}
       onAdminClick={() => navigate('admin')}
       onViewPresentation={() => {
-        sessionStorage.setItem('admin_auth', 'true');
-        setIsAuthenticated(true);
-        navigate('presenter');
+        const displayName = '__display__';
+        sessionStorage.setItem('guest_name', displayName);
+        setGuestName(displayName);
+        navigate('viewer');
       }}
     />
   );

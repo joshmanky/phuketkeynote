@@ -8,10 +8,13 @@ interface Props {
   onLeave: () => void;
 }
 
+const DISPLAY_MODE_KEY = '__display__';
+
 function ViewerContent({ guestName, onLeave }: Props) {
   const { isLive, guestCount, currentSlide, totalSlides } = usePresentation();
+  const isDisplayMode = guestName === DISPLAY_MODE_KEY;
 
-  if (!isLive) {
+  if (!isLive && !isDisplayMode) {
     return <WaitingLobby guestName={guestName} guestCount={guestCount} onLeave={onLeave} />;
   }
 
@@ -24,20 +27,24 @@ function ViewerContent({ guestName, onLeave }: Props) {
         />
       </div>
 
-      <div className="absolute top-3 left-3 z-40 flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/15 border border-red-500/25">
-        <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse-live" />
-        <span className="text-red-400 text-[10px] font-bold tracking-wider">LIVE</span>
-      </div>
+      {isLive && (
+        <div className="absolute top-3 left-3 z-40 flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/15 border border-red-500/25">
+          <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse-live" />
+          <span className="text-red-400 text-[10px] font-bold tracking-wider">LIVE</span>
+        </div>
+      )}
 
-      <div className="absolute top-3 right-3 z-40 flex items-center gap-3">
-        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06]">
-          <Users size={11} className="text-teal-400" />
-          <span className="text-white/50 text-[10px] font-bold">{guestCount}</span>
+      {!isDisplayMode && (
+        <div className="absolute top-3 right-3 z-40 flex items-center gap-3">
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06]">
+            <Users size={11} className="text-teal-400" />
+            <span className="text-white/50 text-[10px] font-bold">{guestCount}</span>
+          </div>
+          <div className="px-2.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06]">
+            <span className="text-white/30 text-[10px]">{guestName}</span>
+          </div>
         </div>
-        <div className="px-2.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06]">
-          <span className="text-white/30 text-[10px]">{guestName}</span>
-        </div>
-      </div>
+      )}
 
       <SlideTransition />
     </div>
