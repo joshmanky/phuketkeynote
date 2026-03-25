@@ -65,7 +65,7 @@ export const TRIP_DAYS: TripDayData[] = [
         name: 'Abholung \u2013 Inselhopping',
         description: 'Abholung um 07:30 Uhr vom Hotel HOMA Phuket Town. Puenktlichkeit erforderlich \u2013 wer zu spaet ist, muss eigenstaendig nachfahren.',
         startTime: '07:30',
-        location: 'Hotel HOMA Phuket Town',
+        location: 'Hotel HOMA Phuket Town (W95H+6C)',
         isPickupCritical: true,
       },
       {
@@ -185,6 +185,14 @@ export const TRIP_DAYS: TripDayData[] = [
     dayOfWeekFull: 'Dienstag',
     events: [
       {
+        type: 'pickup',
+        name: 'Abholung \u2013 Elefantenreservat',
+        description: 'Abholung um 13:30 Uhr vom Hotel HOMA Phuket Town \u2013 Lobby. Puenktlichkeit erforderlich \u2013 wer zu spaet ist, muss eigenstaendig nachfahren.',
+        startTime: '13:30',
+        location: 'Hotel HOMA Phuket Town \u2013 Lobby',
+        isPickupCritical: true,
+      },
+      {
         type: 'activity',
         name: 'Elefantenreservat',
         description: 'Besuch im Elefanten-Schutzzentrum.',
@@ -202,7 +210,7 @@ export const TRIP_DAYS: TripDayData[] = [
       {
         type: 'mastermind',
         name: 'Mastermind Session',
-        description: 'Intensiver Team-Workshop am Abend.',
+        description: 'Intensiver Team-Workshop am Vormittag. Nachmittag zur freien Verfuegung.',
         startTime: '21:00',
         location: 'Konferenzraum',
       },
