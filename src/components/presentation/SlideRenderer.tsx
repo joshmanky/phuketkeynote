@@ -1,4 +1,5 @@
-// Routes slide index to the correct slide component
+// Routes slide index to the correct slide component with React.memo optimization
+import { memo } from 'react';
 import { SLIDES } from '../../data/slides';
 import { TRIP_DAYS } from '../../data/schedule';
 import { TitleSlide } from '../slides/TitleSlide';
@@ -16,7 +17,7 @@ interface Props {
   slideIndex: number;
 }
 
-export function SlideRenderer({ slideIndex }: Props) {
+export const SlideRenderer = memo(function SlideRenderer({ slideIndex }: Props) {
   const slide = SLIDES[slideIndex];
   if (!slide) return null;
 
@@ -76,4 +77,4 @@ export function SlideRenderer({ slideIndex }: Props) {
     default:
       return null;
   }
-}
+});

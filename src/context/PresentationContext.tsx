@@ -1,15 +1,12 @@
-// Presentation state management with Supabase Realtime sync
-import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+// Simplified presentation state with Supabase Realtime sync - Framer Motion handles transitions
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-import { SLIDES, TOTAL_SLIDES, TRANSITION_DURATION } from '../data/slides';
+import { TOTAL_SLIDES } from '../data/slides';
 import type { PresentationState } from '../types';
 
 interface PresentationContextValue {
   currentSlide: number;
-  previousSlide: number | null;
   isLive: boolean;
-  isTransitioning: boolean;
-  transitionDirection: 'forward' | 'backward';
   totalSlides: number;
   guestCount: number;
   isAdmin: boolean;
@@ -34,12 +31,8 @@ interface Props {
 
 export function PresentationProvider({ mode, children }: Props) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [previousSlide, setPreviousSlide] = useState<number | null>(null);
   const [isLive, setIsLive] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward'>('forward');
   const [guestCount, setGuestCount] = useState(0);
-  const transitionTimer = useRef<ReturnType<typeof setTimeout>>();
   const isAdmin = mode === 'admin';
 
   useEffect(() => {
@@ -49,24 +42,13 @@ export function PresentationProvider({ mode, children }: Props) {
         .select('*')
         .limit(1)
         .maybeSingle();
-
       if (data) {
         const state = data as PresentationState;
-        if (!isAdmin) {
-          setCurrentSlide(state.current_slide_index);
-          setIsLive(state.is_live);
-        } else {
-          setCurrentSlide(state.current_slide_index);
-          setIsLive(state.is_live);
-        }
+        setCurrentSlide(state.current_slide_index);
+        setIsLive(state.is_live);
       }
     })();
   }, [isAdmin]);
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {});
-    return () => subscription.unsubscribe();
-  }, []);
 
   useEffect(() => {
     const channel = supabase
@@ -78,17 +60,13 @@ export function PresentationProvider({ mode, children }: Props) {
       }, (payload) => {
         const newState = payload.new as PresentationState;
         if (!isAdmin) {
-          const dir = newState.transition_direction as 'forward' | 'backward';
-          triggerTransition(newState.current_slide_index, dir);
+          setCurrentSlide(newState.current_slide_index);
           setIsLive(newState.is_live);
         }
       })
       .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [isAdmin, currentSlide]);
+    return () => { supabase.removeChannel(channel); };
+  }, [isAdmin]);
 
   useEffect(() => {
     (async () => {
@@ -98,7 +76,6 @@ export function PresentationProvider({ mode, children }: Props) {
         .eq('is_active', true);
       setGuestCount(count || 0);
     })();
-
     const channel = supabase
       .channel('guests-sync')
       .on('postgres_changes', {
@@ -113,88 +90,39 @@ export function PresentationProvider({ mode, children }: Props) {
         setGuestCount(count || 0);
       })
       .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
-  const triggerTransition = useCallback((targetSlide: number, dir: 'forward' | 'backward') => {
-    if (targetSlide === currentSlide) return;
-    if (isTransitioning) return;
-
-    const transitionType = SLIDES[targetSlide]?.transition || 'mindflow';
-    const duration = TRANSITION_DURATION[transitionType] || 800;
-
-    setPreviousSlide(currentSlide);
-    setTransitionDirection(dir);
-    setIsTransitioning(true);
-
-    if (transitionTimer.current) clearTimeout(transitionTimer.current);
-    transitionTimer.current = setTimeout(() => {
-      setCurrentSlide(targetSlide);
-      setPreviousSlide(null);
-      setIsTransitioning(false);
-    }, duration);
-  }, [currentSlide, isTransitioning]);
-
-  const syncToDb = useCallback(async (slideIndex: number, dir: 'forward' | 'backward', live?: boolean) => {
+  const syncToDb = useCallback(async (slideIndex: number, live?: boolean) => {
     const updates: Record<string, unknown> = {
       current_slide_index: slideIndex,
-      transition_direction: dir,
+      transition_direction: 'forward',
       updated_at: new Date().toISOString(),
     };
     if (live !== undefined) updates.is_live = live;
-
-    await supabase
-      .from('presentation_state')
-      .update(updates)
-      .gte('current_slide_index', 0);
+    await supabase.from('presentation_state').update(updates).gte('current_slide_index', 0);
   }, []);
 
   const goToSlide = useCallback((index: number) => {
     if (index < 0 || index >= TOTAL_SLIDES) return;
-    if (isTransitioning) return;
+    setCurrentSlide(index);
+    if (isAdmin && isLive) syncToDb(index);
+  }, [isAdmin, isLive, syncToDb]);
 
-    const dir: 'forward' | 'backward' = index > currentSlide ? 'forward' : 'backward';
-    triggerTransition(index, dir);
-
-    if (isAdmin && isLive) {
-      syncToDb(index, dir);
-    }
-  }, [currentSlide, isAdmin, isLive, isTransitioning, triggerTransition, syncToDb]);
-
-  const nextSlide = useCallback(() => {
-    goToSlide(currentSlide + 1);
-  }, [currentSlide, goToSlide]);
-
-  const prevSlide = useCallback(() => {
-    goToSlide(currentSlide - 1);
-  }, [currentSlide, goToSlide]);
+  const nextSlide = useCallback(() => goToSlide(currentSlide + 1), [currentSlide, goToSlide]);
+  const prevSlide = useCallback(() => goToSlide(currentSlide - 1), [currentSlide, goToSlide]);
 
   const toggleLive = useCallback(async () => {
     const newLive = !isLive;
     setIsLive(newLive);
-    await syncToDb(currentSlide, transitionDirection, newLive);
-  }, [isLive, currentSlide, transitionDirection, syncToDb]);
+    await syncToDb(currentSlide, newLive);
+  }, [isLive, currentSlide, syncToDb]);
 
   return (
-    <PresentationCtx.Provider
-      value={{
-        currentSlide,
-        previousSlide,
-        isLive,
-        isTransitioning,
-        transitionDirection,
-        totalSlides: TOTAL_SLIDES,
-        guestCount,
-        isAdmin,
-        goToSlide,
-        nextSlide,
-        prevSlide,
-        toggleLive,
-      }}
-    >
+    <PresentationCtx.Provider value={{
+      currentSlide, isLive, totalSlides: TOTAL_SLIDES, guestCount, isAdmin,
+      goToSlide, nextSlide, prevSlide, toggleLive,
+    }}>
       {children}
     </PresentationCtx.Provider>
   );
