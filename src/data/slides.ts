@@ -39,7 +39,8 @@ export const SLIDES: SlideDefinition[] = [
       keyPoints: [
         'Morgenroutine bis 18:00 Uhr Ortszeit durchstrecken',
         'Danach \u2013 Arbeit leisten, um voranzukommen',
-        'Theoretisch bis 6:00 Uhr morgens wach bleiben',
+        'Theoretisch bis 6 Uhr morgens wach bleiben',
+        'Das gilt aber nur, wenn man nicht die Arbeit macht und nicht wirklich in die Vorbereitung reingeht.',
         'Tage voll und effizient packen, aber flexibel aufbauen',
       ],
     },
@@ -51,10 +52,10 @@ export const SLIDES: SlideDefinition[] = [
     data: {
       heading: 'Selbststaendigkeit & Leadership',
       body: [
-        'Du bist in einer Position \u2013 Stufe 3 \u2013, in der du erst alles alleine machst, dann etwas mit deiner Organisation aufbaust und am Ende die Organisation wieder in die Selbststaendigkeit fuehrst.',
-        'Das funktioniert nur, wenn du selbst einen selbststaendigen Leader aufgebaut hast, der in der Lage ist, das Geschaeft fortzufuehren, waehrend du vielleicht nicht zu 100% praesent bist.',
-        'Sei selbst ein Vorbild an Selbststaendigkeit. Nutze die 6 Stunden, die du hast, wirklich sinnvoll.',
-        'Sieh diese Zeit nicht nur fuer dich selbst \u2013 arbeite vor, um das Geschaeft abzusichern. Das ist die Kuer, um die 90 Tage zu meistern.',
+        'Selbststaendiges Denken und selbststaendiges Arbeiten ist sehr wichtig. Offene Zentren solltest du natuerlich geniessen \u2013 aber du bist in einer Rolle, in der die meisten nicht ohne dich arbeiten koennen.',
+        'Deswegen solltest du dich nicht zu weit aus dem Fenster lehnen. Versteh diese Freiheit als Chance, das Team aufzubauen und die Zentren gezielt dafuer zu nutzen.',
+        'Wir arbeiten nicht, um zu chillen \u2013 sondern damit dieser Lifestyle und die Arbeit angenehmer werden: besseres Equipment, bessere Tools, bessere Locations.',
+        'Wie Mac immer sagt: Lieber im Luxus hustlen \u2013 also arbeiten \u2013 als in der Armut zu chillen.',
       ],
       accent: 'red',
       icon: 'shield',
@@ -230,7 +231,7 @@ export const SLIDES: SlideDefinition[] = [
     type: 'closing',
     transition: 'mindflow',
     data: {
-      title: 'See You in Phuket',
+      title: 'Enjoy in Phuket',
       subtitle: '25. Marz \u2013 1. April 2026',
     },
   },

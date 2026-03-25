@@ -66,22 +66,26 @@ export function AdminControls({ displayMode }: Props) {
             </>
           )}
 
-          <div className="w-px h-6 bg-white/10 mx-0.5 sm:mx-1" />
+          {!displayMode && (
+            <>
+              <div className="w-px h-6 bg-white/10 mx-0.5 sm:mx-1" />
 
-          <button
-            onClick={() => setShowGuests(true)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
-          >
-            <Users size={12} className="text-teal-400" />
-            <span className="text-white font-bold text-xs tabular-nums">{guestCount}</span>
-          </button>
+              <button
+                onClick={() => setShowGuests(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+              >
+                <Users size={12} className="text-teal-400" />
+                <span className="text-white font-bold text-xs tabular-nums">{guestCount}</span>
+              </button>
 
-          <button
-            onClick={() => setShowOverview(true)}
-            className="w-8 h-8 rounded-xl flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-colors"
-          >
-            <Grid3X3 size={14} />
-          </button>
+              <button
+                onClick={() => setShowOverview(true)}
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <Grid3X3 size={14} />
+              </button>
+            </>
+          )}
         </div>
       </motion.div>
 

@@ -3,13 +3,14 @@ import { PresentationProvider, usePresentation } from '../context/PresentationCo
 import { SlideTransition } from '../components/presentation/SlideTransition';
 import { AdminControls } from '../components/presentation/AdminControls';
 import { useKeyboardNav } from '../hooks/useKeyboardNav';
+import { ArrowLeft, X } from 'lucide-react';
 
 interface Props {
   displayMode: boolean;
   onLogout: () => void;
 }
 
-function PresenterContent({ displayMode, onLogout: _onLogout }: Props) {
+function PresenterContent({ displayMode, onLogout }: Props) {
   const { nextSlide, prevSlide, toggleLive, isLive, currentSlide, totalSlides } = usePresentation();
 
   useKeyboardNav({
@@ -27,6 +28,24 @@ function PresenterContent({ displayMode, onLogout: _onLogout }: Props) {
           style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }}
         />
       </div>
+
+      {displayMode && (
+        <>
+          <button
+            onClick={onLogout}
+            className="absolute top-4 left-4 z-40 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/40 backdrop-blur-sm border border-white/[0.08] text-white/40 hover:text-white hover:bg-black/60 hover:border-white/15 transition-all text-xs font-medium"
+          >
+            <ArrowLeft size={13} />
+            Zuruck
+          </button>
+          <button
+            onClick={onLogout}
+            className="absolute top-4 right-4 z-40 w-8 h-8 flex items-center justify-center rounded-xl bg-black/40 backdrop-blur-sm border border-white/[0.08] text-white/30 hover:text-white hover:bg-black/60 hover:border-white/15 transition-all"
+          >
+            <X size={14} />
+          </button>
+        </>
+      )}
 
       {isLive && !displayMode && (
         <div className="absolute top-3 right-3 z-40 flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/15 border border-red-500/25">
