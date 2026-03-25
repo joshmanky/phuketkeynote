@@ -66,7 +66,7 @@ export function AdminLoginPage({ onLogin, onBack }: Props) {
                   value={password}
                   onChange={e => { setPassword(e.target.value); setError(''); }}
                   placeholder="Passwort eingeben"
-                  className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-teal-500/40 focus:ring-1 focus:ring-teal-500/20 transition-all"
+                  className="w-full bg-white/[0.06] border border-white/10 rounded-xl pl-10 pr-4 py-4 sm:py-3 text-white text-base sm:text-sm placeholder:text-white/20 focus:outline-none focus:border-teal-500/40 focus:ring-1 focus:ring-teal-500/20 transition-all"
                   autoFocus
                   disabled={loading}
                 />
@@ -80,7 +80,7 @@ export function AdminLoginPage({ onLogin, onBack }: Props) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/30 text-teal-400 font-semibold text-sm rounded-xl py-3 transition-all disabled:opacity-30"
+              className="w-full flex items-center justify-center gap-2 bg-teal-500/20 hover:bg-teal-500/30 active:bg-teal-500/40 border border-teal-500/30 text-teal-400 font-semibold text-sm rounded-xl py-4 sm:py-3 transition-all disabled:opacity-30"
             >
               {loading ? (
                 <div className="w-4 h-4 border-2 border-teal-400/30 border-t-teal-400 rounded-full animate-spin" />

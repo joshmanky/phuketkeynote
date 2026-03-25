@@ -74,21 +74,21 @@ export function GuestPanel({ onClose, onSessionEnded }: Props) {
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-colors"
+            className="w-10 h-10 sm:w-7 sm:h-7 rounded-xl sm:rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 active:bg-white/15 transition-colors"
           >
-            <X size={14} />
+            <X size={16} />
           </button>
         </div>
 
-        <div className="max-h-64 overflow-y-auto">
+        <div className="max-h-72 sm:max-h-64 overflow-y-auto">
           {guests.length === 0 ? (
-            <div className="py-8 text-center text-white/25 text-sm">
+            <div className="py-10 sm:py-8 text-center text-white/25 text-sm">
               Noch keine Teilnehmer
             </div>
           ) : (
             <ul className="divide-y divide-white/[0.04]">
               {guests.map((guest) => (
-                <li key={guest.id} className="flex items-center justify-between px-4 py-2.5">
+                <li key={guest.id} className="flex items-center justify-between px-4 py-3 sm:py-2.5">
                   <div className="min-w-0">
                     <p className="text-white text-sm font-medium truncate">{guest.display_name}</p>
                     <p className="text-white/25 text-[10px]">
@@ -97,10 +97,10 @@ export function GuestPanel({ onClose, onSessionEnded }: Props) {
                   </div>
                   <button
                     onClick={() => removeGuest(guest.id)}
-                    className="ml-3 shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                    className="ml-3 shrink-0 w-10 h-10 sm:w-7 sm:h-7 rounded-xl sm:rounded-lg flex items-center justify-center text-white/20 hover:text-red-400 hover:bg-red-500/10 active:bg-red-500/15 transition-colors"
                     title="Teilnehmer entfernen"
                   >
-                    <UserX size={13} />
+                    <UserX size={14} />
                   </button>
                 </li>
               ))}
@@ -117,7 +117,7 @@ export function GuestPanel({ onClose, onSessionEnded }: Props) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setShowConfirm(true)}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-semibold hover:bg-red-500/20 transition-all"
+                className="w-full flex items-center justify-center gap-2 px-3 py-3 sm:py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-semibold hover:bg-red-500/20 active:bg-red-500/30 transition-all"
               >
                 <Power size={14} />
                 Session beenden
@@ -137,14 +137,14 @@ export function GuestPanel({ onClose, onSessionEnded }: Props) {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowConfirm(false)}
-                    className="flex-1 py-2 rounded-xl bg-white/[0.05] text-white/50 text-xs font-semibold hover:bg-white/10 transition-colors"
+                    className="flex-1 py-3 sm:py-2 rounded-xl bg-white/[0.05] text-white/50 text-xs font-semibold hover:bg-white/10 active:bg-white/15 transition-colors"
                   >
                     Abbrechen
                   </button>
                   <button
                     onClick={handleEndSession}
                     disabled={ending}
-                    className="flex-1 py-2 rounded-xl bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-semibold hover:bg-red-500/30 transition-colors disabled:opacity-50"
+                    className="flex-1 py-3 sm:py-2 rounded-xl bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-semibold hover:bg-red-500/30 active:bg-red-500/40 transition-colors disabled:opacity-50"
                   >
                     {ending ? 'Beende...' : 'Ja, beenden'}
                   </button>
