@@ -2,7 +2,7 @@
 import { useEffect, useCallback } from 'react';
 import { PresentationProvider, usePresentation } from '../context/PresentationContext';
 import { SlideTransition } from '../components/presentation/SlideTransition';
-import { Radio, Users, LogOut } from 'lucide-react';
+import { Radio, Users, LogOut, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Props {
@@ -21,6 +21,7 @@ async function deactivateGuest() {
 
 function ViewerContent({ guestName, onLeave }: Props) {
   const { isLive, sessionEnded, guestCount, currentSlide, totalSlides } = usePresentation();
+
 
   const handleLeave = useCallback(async () => {
     await deactivateGuest();
@@ -63,9 +64,18 @@ function ViewerContent({ guestName, onLeave }: Props) {
         />
       </div>
 
-      <div className="absolute top-3 left-3 z-40 flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-red-500/15 border border-red-500/25">
-        <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse-live" />
-        <span className="text-red-400 text-[10px] font-bold tracking-wider">LIVE</span>
+      <div className="absolute top-3 left-3 z-40 flex items-center gap-2">
+        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-red-500/15 border border-red-500/25">
+          <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse-live" />
+          <span className="text-red-400 text-[10px] font-bold tracking-wider">LIVE</span>
+        </div>
+        <button
+          onClick={handleLeave}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/[0.08] text-white/30 hover:text-white/60 active:text-white/80 transition-all text-[10px] font-medium"
+        >
+          <ArrowLeft size={11} />
+          <span className="hidden sm:inline">Hauptmenu</span>
+        </button>
       </div>
 
       <div className="absolute top-3 right-3 z-40 flex items-center gap-2">

@@ -55,7 +55,7 @@ function PresenterContent({ displayMode, onLogout }: Props) {
       )}
 
       <SlideTransition />
-      <AdminControls displayMode={displayMode} />
+      <AdminControls displayMode={displayMode} onLogout={onLogout} />
     </div>
   );
 }

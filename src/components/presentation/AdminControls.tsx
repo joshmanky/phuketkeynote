@@ -1,6 +1,6 @@
 // Presenter controls: slide navigation, live toggle, guest management - mobile-optimized
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Radio, Circle, Users, Grid3x3 as Grid3X3, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Radio, Circle, Users, Grid3x3 as Grid3X3, X, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePresentation } from '../../context/PresentationContext';
 import { GuestPanel } from './GuestPanel';
@@ -8,9 +8,10 @@ import { SLIDES } from '../../data/slides';
 
 interface Props {
   displayMode: boolean;
+  onLogout: () => void;
 }
 
-export function AdminControls({ displayMode }: Props) {
+export function AdminControls({ displayMode, onLogout }: Props) {
   const { currentSlide, totalSlides, isLive, guestCount, nextSlide, prevSlide, goToSlide, toggleLive } = usePresentation();
   const [showOverview, setShowOverview] = useState(false);
   const [showGuests, setShowGuests] = useState(false);
@@ -77,6 +78,14 @@ export function AdminControls({ displayMode }: Props) {
                 className="w-11 h-[38px] sm:w-10 sm:h-9 rounded-xl flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 active:bg-white/15 transition-colors border border-white/[0.06]"
               >
                 <Grid3X3 size={15} />
+              </button>
+
+              <button
+                onClick={onLogout}
+                className="w-11 h-[38px] sm:w-10 sm:h-9 rounded-xl flex items-center justify-center text-white/25 hover:text-white/60 active:text-white/80 hover:bg-white/8 active:bg-white/12 transition-colors border border-white/[0.06]"
+                title="Abmelden"
+              >
+                <LogOut size={14} />
               </button>
             </div>
           )}
