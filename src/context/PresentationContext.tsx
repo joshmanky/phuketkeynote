@@ -39,21 +39,31 @@ export function PresentationProvider({ mode, children }: Props) {
   const [guestCount, setGuestCount] = useState(0);
   const isAdmin = mode === 'admin';
 
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from('presentation_state')
-        .select('*')
-        .limit(1)
-        .maybeSingle();
-      if (data) {
-        const state = data as PresentationState;
+  const fetchState = useCallback(async () => {
+    const { data } = await supabase
+      .from('presentation_state')
+      .select('*')
+      .limit(1)
+      .maybeSingle();
+    if (data) {
+      const state = data as PresentationState;
+      if (!isAdmin) {
         setCurrentSlide(state.current_slide_index);
         setIsLive(state.is_live);
         setSessionEnded(state.session_ended ?? false);
       }
-    })();
+    }
   }, [isAdmin]);
+
+  useEffect(() => {
+    fetchState();
+  }, [fetchState]);
+
+  useEffect(() => {
+    if (isAdmin) return;
+    const interval = setInterval(fetchState, 4000);
+    return () => clearInterval(interval);
+  }, [isAdmin, fetchState]);
 
   useEffect(() => {
     const channel = supabase
@@ -130,12 +140,12 @@ export function PresentationProvider({ mode, children }: Props) {
   }, [isLive, currentSlide, syncToDb]);
 
   const endSession = useCallback(async () => {
+    await syncToDb(currentSlide, false, true);
+    setIsLive(false);
     await supabase
       .from('session_guests')
       .update({ is_active: false, left_at: new Date().toISOString() })
-      .eq('is_active', true);
-    setIsLive(false);
-    await syncToDb(currentSlide, false, true);
+      .neq('id', '00000000-0000-0000-0000-000000000000');
   }, [currentSlide, syncToDb]);
 
   const resetSession = useCallback(async () => {
