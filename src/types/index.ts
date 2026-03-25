@@ -24,6 +24,7 @@ export interface PresentationState {
   current_slide_index: number;
   total_slides: number;
   is_live: boolean;
+  session_ended: boolean;
   transition_direction: 'forward' | 'backward';
   updated_at: string;
 }
@@ -33,6 +34,7 @@ export interface SessionGuest {
   display_name: string;
   is_active: boolean;
   joined_at: string;
+  left_at?: string | null;
 }
 
 export type EventType =

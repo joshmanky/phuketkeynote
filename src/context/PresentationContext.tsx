@@ -1,4 +1,4 @@
-// Simplified presentation state with Supabase Realtime sync - Framer Motion handles transitions
+// Presentation state with Supabase Realtime sync, guest management, and session lifecycle
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { TOTAL_SLIDES } from '../data/slides';
@@ -7,6 +7,7 @@ import type { PresentationState } from '../types';
 interface PresentationContextValue {
   currentSlide: number;
   isLive: boolean;
+  sessionEnded: boolean;
   totalSlides: number;
   guestCount: number;
   isAdmin: boolean;
@@ -14,6 +15,8 @@ interface PresentationContextValue {
   nextSlide: () => void;
   prevSlide: () => void;
   toggleLive: () => void;
+  endSession: () => Promise<void>;
+  resetSession: () => Promise<void>;
 }
 
 const PresentationCtx = createContext<PresentationContextValue | null>(null);
@@ -32,6 +35,7 @@ interface Props {
 export function PresentationProvider({ mode, children }: Props) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLive, setIsLive] = useState(false);
+  const [sessionEnded, setSessionEnded] = useState(false);
   const [guestCount, setGuestCount] = useState(0);
   const isAdmin = mode === 'admin';
 
@@ -46,6 +50,7 @@ export function PresentationProvider({ mode, children }: Props) {
         const state = data as PresentationState;
         setCurrentSlide(state.current_slide_index);
         setIsLive(state.is_live);
+        setSessionEnded(state.session_ended ?? false);
       }
     })();
   }, [isAdmin]);
@@ -62,6 +67,7 @@ export function PresentationProvider({ mode, children }: Props) {
         if (!isAdmin) {
           setCurrentSlide(newState.current_slide_index);
           setIsLive(newState.is_live);
+          setSessionEnded(newState.session_ended ?? false);
         }
       })
       .subscribe();
@@ -93,13 +99,14 @@ export function PresentationProvider({ mode, children }: Props) {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  const syncToDb = useCallback(async (slideIndex: number, live?: boolean) => {
+  const syncToDb = useCallback(async (slideIndex: number, live?: boolean, ended?: boolean) => {
     const updates: Record<string, unknown> = {
       current_slide_index: slideIndex,
       transition_direction: 'forward',
       updated_at: new Date().toISOString(),
     };
     if (live !== undefined) updates.is_live = live;
+    if (ended !== undefined) updates.session_ended = ended;
     await supabase.from('presentation_state').update(updates).gte('current_slide_index', 0);
   }, []);
 
@@ -115,13 +122,31 @@ export function PresentationProvider({ mode, children }: Props) {
   const toggleLive = useCallback(async () => {
     const newLive = !isLive;
     setIsLive(newLive);
-    await syncToDb(currentSlide, newLive);
+    if (newLive) {
+      await syncToDb(currentSlide, true, false);
+    } else {
+      await syncToDb(currentSlide, false);
+    }
   }, [isLive, currentSlide, syncToDb]);
+
+  const endSession = useCallback(async () => {
+    await supabase
+      .from('session_guests')
+      .update({ is_active: false, left_at: new Date().toISOString() })
+      .eq('is_active', true);
+    setIsLive(false);
+    await syncToDb(currentSlide, false, true);
+  }, [currentSlide, syncToDb]);
+
+  const resetSession = useCallback(async () => {
+    setSessionEnded(false);
+    await syncToDb(currentSlide, false, false);
+  }, [currentSlide, syncToDb]);
 
   return (
     <PresentationCtx.Provider value={{
-      currentSlide, isLive, totalSlides: TOTAL_SLIDES, guestCount, isAdmin,
-      goToSlide, nextSlide, prevSlide, toggleLive,
+      currentSlide, isLive, sessionEnded, totalSlides: TOTAL_SLIDES, guestCount, isAdmin,
+      goToSlide, nextSlide, prevSlide, toggleLive, endSession, resetSession,
     }}>
       {children}
     </PresentationCtx.Provider>

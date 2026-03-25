@@ -25,9 +25,11 @@ export function LandingPage({ onJoin, onAdminClick, onViewPresentation }: Props)
     setLoading(true);
     setError('');
 
-    const { error: dbError } = await supabase
+    const { data: inserted, error: dbError } = await supabase
       .from('session_guests')
-      .insert({ display_name: trimmed });
+      .insert({ display_name: trimmed })
+      .select('id')
+      .maybeSingle();
 
     if (dbError) {
       setError('Fehler beim Beitreten. Bitte versuche es erneut.');
@@ -36,11 +38,13 @@ export function LandingPage({ onJoin, onAdminClick, onViewPresentation }: Props)
     }
 
     sessionStorage.setItem('guest_name', trimmed);
+    if (inserted?.id) sessionStorage.setItem('guest_id', inserted.id);
     onJoin(trimmed);
   }
 
   return (
-    <div className="h-full flex flex-col items-center justify-center gradient-bg-ocean relative overflow-hidden">
+    <div className="h-full overflow-y-auto gradient-bg-ocean relative" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="min-h-full flex flex-col items-center justify-center relative overflow-hidden py-8">
       <div className="ambient-glow w-[500px] h-[500px] bg-teal-500/10 -top-20 right-0" />
       <div className="ambient-glow w-[400px] h-[400px] bg-cyan-500/8 bottom-0 -left-20" />
 
@@ -122,6 +126,7 @@ export function LandingPage({ onJoin, onAdminClick, onViewPresentation }: Props)
             Admin-Login
           </button>
         </div>
+      </div>
       </div>
     </div>
   );

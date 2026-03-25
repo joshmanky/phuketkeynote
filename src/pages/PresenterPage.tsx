@@ -5,10 +5,11 @@ import { AdminControls } from '../components/presentation/AdminControls';
 import { useKeyboardNav } from '../hooks/useKeyboardNav';
 
 interface Props {
+  displayMode: boolean;
   onLogout: () => void;
 }
 
-function PresenterContent({ onLogout: _onLogout }: Props) {
+function PresenterContent({ displayMode, onLogout: _onLogout }: Props) {
   const { nextSlide, prevSlide, toggleLive, isLive, currentSlide, totalSlides } = usePresentation();
 
   useKeyboardNav({
@@ -27,7 +28,7 @@ function PresenterContent({ onLogout: _onLogout }: Props) {
         />
       </div>
 
-      {isLive && (
+      {isLive && !displayMode && (
         <div className="absolute top-3 right-3 z-40 flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/15 border border-red-500/25">
           <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse-live" />
           <span className="text-red-400 text-[10px] font-bold tracking-wider">LIVE</span>
@@ -35,15 +36,15 @@ function PresenterContent({ onLogout: _onLogout }: Props) {
       )}
 
       <SlideTransition />
-      <AdminControls />
+      <AdminControls displayMode={displayMode} />
     </div>
   );
 }
 
-export function PresenterPage({ onLogout }: Props) {
+export function PresenterPage({ displayMode, onLogout }: Props) {
   return (
     <PresentationProvider mode="admin">
-      <PresenterContent onLogout={onLogout} />
+      <PresenterContent displayMode={displayMode} onLogout={onLogout} />
     </PresentationProvider>
   );
 }

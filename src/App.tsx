@@ -5,12 +5,13 @@ import { AdminLoginPage } from './pages/AdminLoginPage';
 import { PresenterPage } from './pages/PresenterPage';
 import { ViewerPage } from './pages/ViewerPage';
 
-type Route = 'landing' | 'admin' | 'presenter' | 'viewer';
+type Route = 'landing' | 'admin' | 'presenter' | 'display' | 'viewer';
 
 function getRouteFromHash(): Route {
   const hash = window.location.hash;
   if (hash === '#/admin') return 'admin';
   if (hash === '#/present') return 'presenter';
+  if (hash === '#/display') return 'display';
   if (hash === '#/view') return 'viewer';
   return 'landing';
 }
@@ -35,6 +36,7 @@ function App() {
       landing: '#/',
       admin: '#/admin',
       presenter: '#/present',
+      display: '#/display',
       viewer: '#/view',
     };
     window.location.hash = hashMap[r];
@@ -48,11 +50,21 @@ function App() {
     }
     return (
       <PresenterPage
+        displayMode={false}
         onLogout={() => {
           sessionStorage.removeItem('admin_auth');
           setIsAuthenticated(false);
           navigate('landing');
         }}
+      />
+    );
+  }
+
+  if (route === 'display') {
+    return (
+      <PresenterPage
+        displayMode={true}
+        onLogout={() => navigate('landing')}
       />
     );
   }
@@ -83,6 +95,7 @@ function App() {
         guestName={guestName}
         onLeave={() => {
           sessionStorage.removeItem('guest_name');
+          sessionStorage.removeItem('guest_id');
           setGuestName('');
           navigate('landing');
         }}
@@ -97,12 +110,7 @@ function App() {
         navigate('viewer');
       }}
       onAdminClick={() => navigate('admin')}
-      onViewPresentation={() => {
-        const displayName = '__display__';
-        sessionStorage.setItem('guest_name', displayName);
-        setGuestName(displayName);
-        navigate('viewer');
-      }}
+      onViewPresentation={() => navigate('display')}
     />
   );
 }
